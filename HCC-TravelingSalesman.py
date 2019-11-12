@@ -12,10 +12,10 @@ AANTSTEDEN = 50
 SIZEPOPULATION = 500
 MUTATIONRATE = 0.01
 FITNESSTOTHEPOWER = 3
-NUMBEROFGENERATIONS = 1001
+NUMBEROFGENERATIONS = 601
 TRIPSHOULDBELOOP = True
 # cities oriented in a "circular" or "random" shape.
-CITIESORIENTATION = "circular"
+CITIESORIENTATION = "random"
 RADIUS = 1
 CENTRE = [0, 0]  # Not used yet
 # chromosome chosen "roulette" from fitnesslist, "eliteist" or "superrace"
@@ -148,6 +148,24 @@ def split_two_at_random_gene(individual_a, individual_b):
                            axis=0)
     return new_a, new_b
 
+def split_two_at_two(individual_a, individual_b):
+    split = np.sort(np.random.randint(1, AANTSTEDEN, 2))
+    split1 = split[0]
+    split2 = split[1]
+    a_1 = individual_a[:split1]
+    a_2 = individual_a[split1:split2]
+    a_3 = individual_a[split2:]
+    b_1 = individual_b[:split1]
+    b_2 = individual_b[split1:split2]
+    b_3 = individual_b[split2:]
+    new_1 = np.concatenate((a_1, b_2, a_3), axis=0)
+    new_2 = np.concatenate((b_1, a_2, b_3), axis=0)
+    new_3 = np.concatenate((a_1, a_2, b_3), axis=0)
+    new_4 = np.concatenate((b_1, b_2, a_3), axis=0)
+    new_5 = np.concatenate((a_1, b_2, b_3), axis=0)
+    new_6 = np.concatenate((b_1, a_2, a_3), axis=0)
+    return [new_1, new_2, new_3, new_4, new_5, new_6]
+
 def find_shortest_two(population, distances):
     """Finds two shortest distances and returns corresponding chromosomes"""
     if distances[1] < distances[0]:
@@ -211,6 +229,17 @@ def fill_superras_rand_split(shortest_two):
         a_new_generation.append(new_b)
     return a_new_generation
 
+def fill_superras_two_split(shortest_two):
+    a_new_generation = []
+    individual_a = shortest_two[0]
+    individual_b = shortest_two[1]
+    asked_length = SIZEPOPULATION - 2
+    while len(a_new_generation) < (asked_length):
+        new_ones = split_two_at_two(individual_a, individual_b)
+        for one in new_ones:
+            a_new_generation.append(one)
+    return a_new_generation[:asked_length]
+
 def fill_superras_rand_chosen_genes(shortest_two):
     """for every gene chooses either parrent random"""
 #    import pdb; pdb.set_trace()
@@ -234,8 +263,13 @@ def fill_superras_rand_chosen_genes(shortest_two):
 def get_superras_generation(population, individual_distance):
     """Finds 2 shortest path chromosomes and uses them to calc rest."""
     shortest_two = find_shortest_two(population, individual_distance)
+#    chance = np.random.random_sample(1)[0]
+#    if chance < 0.7:
     rest_population = fill_superras_rand_split(shortest_two)
-#    rest_population = fill_superras_rand_chosen_genes(shortest_two)
+#    elif chance < 0.9:
+#        rest_population = fill_superras_two_split(shortest_two)
+#    else:
+#        rest_population = fill_superras_rand_chosen_genes(shortest_two)
     total_pop = np.vstack((shortest_two, np.array(rest_population)))
     return total_pop
 
@@ -269,7 +303,9 @@ def mutate(population):
 
 def main():
     """This is the main program loop"""
+    np.random.seed(323456)
     steden, cities_x, cities_y = create_cities()
+#    np.random.seed()
     plt.scatter(cities_x, cities_y, s=3*np.pi)
     plt.show()
     distances = calc_distances_between_cities(steden)
@@ -305,5 +341,4 @@ def main():
     plt.show()
 
 if __name__ == '__main__':
-#    np.random.seed(323456)
     main()
