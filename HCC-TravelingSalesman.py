@@ -4,12 +4,13 @@
 from math import sqrt
 from itertools import accumulate
 import numpy as np
+import matplotlib.pyplot as plt
 #import pdb; pdb.set_trace()
 
 # Verschillende constanten
 AANTSTEDEN = 50
 SIZEPOPULATION = 500
-MUTATIONRATE = 0.03
+MUTATIONRATE = 0.01
 FITNESSTOTHEPOWER = 3
 NUMBEROFGENERATIONS = 1001
 TRIPSHOULDBELOOP = True
@@ -35,7 +36,9 @@ def create_cities():
     else:
         # city distribution is random
         cities = np.random.random_sample((AANTSTEDEN, 2))
-    return cities
+        x_coord = cities[:, 0]
+        y_coord = cities[:, 1]
+    return cities, x_coord, y_coord
 
 def calc_squareroot(x_1, x_2, y_1, y_2):
     """Calculates the distance between coordinates (x1, y1) and (x2, y2)"""
@@ -255,7 +258,7 @@ def mutate(population):
     mutation_population = population
     number_of_mutations = int(AANTSTEDEN * SIZEPOPULATION * MUTATIONRATE)
     for _ in range(number_of_mutations):
-        if SELECTIONCRITERIUM == "eliteist" or SELECTIONCRITERIUM == "superras":
+        if SELECTIONCRITERIUM in ("eliteist", "superras"):
             random_chromosome = np.random.randint(2, SIZEPOPULATION)
         else:
             random_chromosome = np.random.randint(SIZEPOPULATION)
@@ -266,7 +269,9 @@ def mutate(population):
 
 def main():
     """This is the main program loop"""
-    steden = create_cities()
+    steden, cities_x, cities_y = create_cities()
+    plt.scatter(cities_x, cities_y, s=3*np.pi)
+    plt.show()
     distances = calc_distances_between_cities(steden)
     the_population = create_random_generation()
     this_population_distances = calc_individual_distances(the_population,
@@ -290,6 +295,15 @@ def main():
             count_generation, \
             min(this_population_distances), \
             max(this_population_distances)))
+    print_chromosome = get_clean_generation(the_population)[0]
+    x_coord = []
+    y_coord = []
+    for city in print_chromosome:
+        x_coord.append(steden[city, 0])
+        y_coord.append(steden[city, 1])
+    plt.plot(x_coord, y_coord, '-o')
+    plt.show()
 
 if __name__ == '__main__':
+#    np.random.seed(323456)
     main()
