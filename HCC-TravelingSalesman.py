@@ -14,11 +14,12 @@ MUTATIONRATE = 0.01
 FITNESSTOTHEPOWER = 3
 NUMBEROFGENERATIONS = 601
 TRIPSHOULDBELOOP = True
-# cities oriented in a "circular" or "random" shape.
-CITIESORIENTATION = "random"
+# cities oriented in a "circular", "twocircels" or "random" shape.
+CITIESORIENTATION = "circular"
 RADIUS = 1
+RADIUSTWO = [1, 1.1]
 CENTRE = [0, 0]  # Not used yet
-# chromosome chosen "roulette" from fitnesslist, "eliteist" or "superrace"
+# chromosome chosen "roulette" from fitnesslist, "eliteist" or "superras"
 SELECTIONCRITERIUM = "superras"
 
 
@@ -32,6 +33,19 @@ def create_cities():
         radials = np.arange(0, (2 * np.pi), (2 * np.pi) / AANTSTEDEN)
         x_coord = RADIUS * np.cos(radials)
         y_coord = RADIUS * np.sin(radials)
+        cities = np.stack((x_coord, y_coord), axis=-1)
+    elif CITIESORIENTATION == "twocircels":
+        # if AANTSTEDEN not an even number, make sure both parts are integers
+        aant_1 = int(AANTSTEDEN / 2)
+        aant_2 = AANTSTEDEN - aant_1
+        radials_1 = np.arange(0, (2 * np.pi), (2 * np.pi) / aant_1)
+        radials_2 = np.arange(0, (2 * np.pi), (2 * np.pi) / aant_2)
+        x_coord_1 = RADIUSTWO[0] * np.cos(radials_1)
+        y_coord_1 = RADIUSTWO[0] * np.sin(radials_1)
+        x_coord_2 = RADIUSTWO[1] * np.cos(radials_2)
+        y_coord_2 = RADIUSTWO[1] * np.sin(radials_2)
+        x_coord = np.concatenate((x_coord_1, x_coord_2), axis=0)
+        y_coord = np.concatenate((y_coord_1, y_coord_2), axis=0)
         cities = np.stack((x_coord, y_coord), axis=-1)
     else:
         # city distribution is random
@@ -265,11 +279,11 @@ def get_superras_generation(population, individual_distance):
     shortest_two = find_shortest_two(population, individual_distance)
 #    chance = np.random.random_sample(1)[0]
 #    if chance < 0.7:
-    rest_population = fill_superras_rand_split(shortest_two)
+#    rest_population = fill_superras_rand_split(shortest_two)
 #    elif chance < 0.9:
-#        rest_population = fill_superras_two_split(shortest_two)
+#    rest_population = fill_superras_two_split(shortest_two)
 #    else:
-#        rest_population = fill_superras_rand_chosen_genes(shortest_two)
+    rest_population = fill_superras_rand_chosen_genes(shortest_two)
     total_pop = np.vstack((shortest_two, np.array(rest_population)))
     return total_pop
 
@@ -305,7 +319,8 @@ def main():
     """This is the main program loop"""
     np.random.seed(323456)
     steden, cities_x, cities_y = create_cities()
-#    np.random.seed()
+#    print(steden, file=open("steden-323456.txt", "a"))
+    np.random.seed()
     plt.scatter(cities_x, cities_y, s=3*np.pi)
     plt.show()
     distances = calc_distances_between_cities(steden)
