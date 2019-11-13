@@ -14,8 +14,8 @@ MUTATIONRATE = 0.01
 FITNESSTOTHEPOWER = 3
 NUMBEROFGENERATIONS = 601
 TRIPSHOULDBELOOP = True
-# cities oriented in a "circular", "twocircels" or "random" shape.
-CITIESORIENTATION = "circular"
+# cities oriented in a "circular", "twocircles" or "random" shape.
+CITIESORIENTATION = "twocircles"
 RADIUS = 1
 RADIUSTWO = [1, 1.1]
 CENTRE = [0, 0]  # Not used yet
@@ -34,7 +34,7 @@ def create_cities():
         x_coord = RADIUS * np.cos(radials)
         y_coord = RADIUS * np.sin(radials)
         cities = np.stack((x_coord, y_coord), axis=-1)
-    elif CITIESORIENTATION == "twocircels":
+    elif CITIESORIENTATION == "twocircles":
         # if AANTSTEDEN not an even number, make sure both parts are integers
         aant_1 = int(AANTSTEDEN / 2)
         aant_2 = AANTSTEDEN - aant_1
