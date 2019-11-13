@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #import pdb; pdb.set_trace()
 
 # Verschillende constanten
-AANTSTEDEN = 50
+AANTSTEDEN = 51
 SIZEPOPULATION = 500
 MUTATIONRATE = 0.01
 FITNESSTOTHEPOWER = 3
@@ -21,7 +21,9 @@ RADIUSTWO = [1, 1.1]
 CENTRE = [0, 0]  # Not used yet
 # chromosome chosen "roulette" from fitnesslist, "eliteist" or "superras"
 SELECTIONCRITERIUM = "superras"
-
+# method to fill when using superras: "onesplit", "twosplit", "random", "all"
+SUPERMETHOD = "all"
+SUPERALLCHANCES = [0.7, 0.9]
 
 def create_cities():
     """Create AANTSTEDEN amount of x,y combinations.
@@ -277,13 +279,21 @@ def fill_superras_rand_chosen_genes(shortest_two):
 def get_superras_generation(population, individual_distance):
     """Finds 2 shortest path chromosomes and uses them to calc rest."""
     shortest_two = find_shortest_two(population, individual_distance)
-#    chance = np.random.random_sample(1)[0]
-#    if chance < 0.7:
-#    rest_population = fill_superras_rand_split(shortest_two)
-#    elif chance < 0.9:
-#    rest_population = fill_superras_two_split(shortest_two)
-#    else:
-    rest_population = fill_superras_rand_chosen_genes(shortest_two)
+    if SUPERMETHOD == "onesplit":
+        rest_population = fill_superras_rand_split(shortest_two)
+    elif SUPERMETHOD == "twosplit":
+        rest_population = fill_superras_two_split(shortest_two)
+    elif SUPERMETHOD == "random":
+        rest_population = fill_superras_rand_chosen_genes(shortest_two)
+    else:
+        # SUPERMETHOD == "all"
+        chance = np.random.random_sample(1)[0]
+        if chance < SUPERALLCHANCES[0]:
+            rest_population = fill_superras_rand_split(shortest_two)
+        elif chance < SUPERALLCHANCES[1]:
+            rest_population = fill_superras_two_split(shortest_two)
+        else:
+            rest_population = fill_superras_rand_chosen_genes(shortest_two)
     total_pop = np.vstack((shortest_two, np.array(rest_population)))
     return total_pop
 
