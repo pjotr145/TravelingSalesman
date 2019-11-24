@@ -8,21 +8,21 @@ import matplotlib.pyplot as plt
 #import pdb; pdb.set_trace()
 
 # Verschillende constanten
-AANTSTEDEN = 51
+AANTSTEDEN = 50
 SIZEPOPULATION = 500
-MUTATIONRATE = 0.01
+MUTATIONRATE = 0.04
 FITNESSTOTHEPOWER = 3
 NUMBEROFGENERATIONS = 601
 TRIPSHOULDBELOOP = True
 # cities oriented in a "circular", "twocircles" or "random" shape.
-CITIESORIENTATION = "twocircles"
+CITIESORIENTATION = "random"
 RADIUS = 1
 RADIUSTWO = [1, 1.1]
 CENTRE = [0, 0]  # Not used yet
 # chromosome chosen "roulette" from fitnesslist, "eliteist" or "superras"
 SELECTIONCRITERIUM = "superras"
 # method to fill when using superras: "onesplit", "twosplit", "random", "all"
-SUPERMETHOD = "all"
+SUPERMETHOD = "onesplit"
 SUPERALLCHANCES = [0.7, 0.9]
 
 def create_cities():
@@ -48,6 +48,15 @@ def create_cities():
         y_coord_2 = RADIUSTWO[1] * np.sin(radials_2)
         x_coord = np.concatenate((x_coord_1, x_coord_2), axis=0)
         y_coord = np.concatenate((y_coord_1, y_coord_2), axis=0)
+        cities = np.stack((x_coord, y_coord), axis=-1)
+    elif CITIESORIENTATION == "square":
+#        import pdb; pdb.set_trace()
+        x_coord = []
+        y_coord = []
+        for x_square in range(8):
+            for y_square in range(8):
+                x_coord.append(x_square)
+                y_coord.append(y_square)
         cities = np.stack((x_coord, y_coord), axis=-1)
     else:
         # city distribution is random
@@ -330,9 +339,9 @@ def main():
     np.random.seed(323456)
     steden, cities_x, cities_y = create_cities()
 #    print(steden, file=open("steden-323456.txt", "a"))
-    np.random.seed()
-    plt.scatter(cities_x, cities_y, s=3*np.pi)
-    plt.show()
+#    np.random.seed()
+#    plt.scatter(cities_x, cities_y, s=3*np.pi)
+#    plt.show()
     distances = calc_distances_between_cities(steden)
     the_population = create_random_generation()
     this_population_distances = calc_individual_distances(the_population,

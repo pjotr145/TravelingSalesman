@@ -6,6 +6,12 @@ __pycache__/
 # BAS extensions
 *.bas
 
+# vim swap files
+*.swp
+
+# .gitignore
+.gitignore
+
 # C extensions
 *.so
 
