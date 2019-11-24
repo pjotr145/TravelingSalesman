@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Namaken van basic versie van het Traveling Salesman probleem"""
+"""Namaken van basic versie van het Traveling Salesman probleem
+
+Uiteindelijk moet dit omgezet worden naar classes. Dat werkt toch beter.
+"""
 
 from math import sqrt
 from itertools import accumulate
